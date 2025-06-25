@@ -1,4 +1,4 @@
-  <div class="content-container">
+<div class="content-container">
     <h1>Détails de la Session</h1>
 
     <div class="session-info">
@@ -43,6 +43,7 @@
       const endSessionButton = document.getElementById('endSessionButton');
       const deleteSessionButton = document.getElementById('deleteSessionButton');
       const sessionId = '<%= session.id %>';
+      const sessionType = '<%= session.type %>';
 
       if (startSessionButton) {
         startSessionButton.addEventListener('click', () => {
@@ -123,42 +124,58 @@
         });
       }
 
-      // Define the column definitions with the new changes
+      // Define base columns, common to all session types
       const columnDefs = [
         { headerName: "ID", field: "display_id", sortable: true, filter: true, resizable: true, flex: 0.8, sort: 'asc', minWidth: 70 },
         { headerName: "Nom", field: "full_name", sortable: true, filter: true, resizable: true, flex: 1.5, minWidth: 120 },
         { headerName: "Objet", field: "objet", sortable: true, filter: true, resizable: true, flex: 2, minWidth: 150 },
-        { 
-          headerName: "Succès (%)", 
-          field: "average_grade", 
-          sortable: true, 
-          filter: true, 
-          resizable: true, 
-          flex: 1,
+      ];
+
+      // Add specific columns based on the session type
+      if (sessionType === 'jury') {
+        columnDefs.push(
+          { 
+            headerName: "Succès (%)", 
+            field: "average_grade", 
+            sortable: true, filter: true, resizable: true, flex: 1,
+            valueFormatter: params => {
+              if (params.value === null || typeof params.value === 'undefined') return '---';
+              // Jury vote is 0 or 6. Percentage is based on a scale of 6.
+              const percentage = (parseFloat(params.value) / 6) * 100;
+              return percentage.toFixed(0) + '%';
+            },
+            minWidth: 100 
+          },
+          {
+            headerName: "Statut",
+            field: "average_grade",
+            sortable: false, filter: false, resizable: true, flex: 1,
+            minWidth: 110,
+            cellRenderer: params => {
+               if (params.value === null || typeof params.value === 'undefined') return 'En attente';
+               // A vote > 3 means more "Oui" (6) than "Non" (0)
+               const isRetained = parseFloat(params.value) > 3; 
+               const text = isRetained ? 'Retenu' : 'Non Retenu';
+               const color = isRetained ? '#28a745' : '#dc3545';
+               return `<span style="color: ${color}; font-weight: bold;">${text}</span>`;
+            }
+          }
+        );
+      } else { // For 'global' sessions
+        columnDefs.push({
+          headerName: "Note Moyenne",
+          field: "average_grade",
+          sortable: true, filter: true, resizable: true, flex: 1,
+          minWidth: 120,
           valueFormatter: params => {
             if (params.value === null || typeof params.value === 'undefined') return '---';
-            const percentage = (parseFloat(params.value) / 6) * 100;
-            return percentage.toFixed(0) + '%';
-          },
-          minWidth: 100 
-        },
-        {
-          headerName: "Statut",
-          field: "average_grade",
-          sortable: false,
-          filter: false,
-          resizable: true,
-          flex: 1,
-          minWidth: 110,
-          cellRenderer: params => {
-             if (params.value === null || typeof params.value === 'undefined') return 'En attente';
-             const isRetained = parseFloat(params.value) > 3; // Threshold: > 50% (3/6)
-             const text = isRetained ? 'Retenu' : 'Non Retenu';
-             const color = isRetained ? '#28a745' : '#dc3545';
-             return `<span style="color: ${color}; font-weight: bold;">${text}</span>`;
+            return parseFloat(params.value).toFixed(2);
           }
-        },
-        { 
+        });
+      }
+
+      // Add the "Détails" button for all session types
+      columnDefs.push({ 
           headerName: "Détails", 
           flex: 1,
           minWidth: 120,
@@ -169,8 +186,7 @@
             button.addEventListener('click', () => window.location.href = `/propositions/proposition/${params.data.id}`);
             return button;
           }
-        },
-      ];
+      });
 
       gridOptions = {
         columnDefs: columnDefs,
@@ -186,3 +202,4 @@
       new agGrid.Grid(gridDiv, gridOptions);
     })
   </script>
+</div>
