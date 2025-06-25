@@ -1,0 +1,29 @@
+<div class="top-bar">
+  <button id="addFunctionBtn" class="btn btn-primary">+ Ajouter une fonction</button>
+</div>
+
+<% if (functions.length === 0) { %>
+<div class="no-propositions-message">Aucune fonction disponible pour le moment.</div>
+<% } else { %>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nom de la fonction</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% functions.forEach(function(func) { %>
+    <tr>
+      <td><%= func.id %></td>
+      <td><%= func.name %></td>
+      <td>
+        <button class="btn btn-outline modifyFunctionBtn" data-id="<%= func.id %>" data-name="<%= func.name %>">Modifier</button>
+        <button class="btn btn-danger deleteFunctionBtn" data-id="<%= func.id %>">Supprimer</button>
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
+<% } %>

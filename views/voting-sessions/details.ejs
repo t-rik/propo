@@ -1,0 +1,188 @@
+  <div class="content-container">
+    <h1>Détails de la Session</h1>
+
+    <div class="session-info">
+      <p><strong>ID de la session :</strong> <%= session.id %></p>
+      <p><strong>Type de session :</strong> <%= session.type %></p>
+      <p><strong>Statut :</strong> <%= session.ended ? "Terminée" : (session.started ? "En cours" : "Non démarrée") %></p>
+      <p><strong>Date de début :</strong> <%= session.start_time ? new Date(session.start_time).toLocaleString('fr-FR') : '---' %></p>
+      <p><strong>Date de fin :</strong> <%= session.end_time ? new Date(session.end_time).toLocaleString('fr-FR') : '---' %></p>
+    </div>
+    <div class="btncontainer">
+      <% if (isAdmin && session.type == 'global' && session.ended) { %>
+        <a href="/voting-sessions/<%= sessionId %>/resultats-votes-global" class="button btn-primary">Voir les Résultats</a>
+      <% } %>
+
+      <% if (isAdmin && !session.started) { %>
+        <button class="button btn-primary" id="startSessionButton">Demarrer session</button>
+      <% } %>
+
+      <% if (isAdmin && session.started && !session.ended) { %>
+        <button class="button btn-primary" id="endSessionButton">Terminer session</button>
+      <% } %>
+
+      <% if (isAdmin) { %>
+        <button class="button danger-btn" id="deleteSessionButton">Annuler Session</button>
+      <% } %>
+    </div>
+
+    <div id="myGrid" class="ag-theme-alpine"></div>
+
+    <div id="dataContainer" data-row-data='<%= JSON.stringify(propositions).replace(/[<>]/g, match => ({ "<": "<", ">": ">" }[match])) %>' style="display: none;"></div>
+  </div>
+
+  <script src="/localization/fr-FR.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      let gridOptions;
+      
+      const dataContainer = document.getElementById('dataContainer');
+      const rowData = JSON.parse(dataContainer.getAttribute('data-row-data'));
+
+      const startSessionButton = document.getElementById('startSessionButton');
+      const endSessionButton = document.getElementById('endSessionButton');
+      const deleteSessionButton = document.getElementById('deleteSessionButton');
+      const sessionId = '<%= session.id %>';
+
+      if (startSessionButton) {
+        startSessionButton.addEventListener('click', () => {
+          Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: "Cela va démarrer la session de vote.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#004d99',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, démarrez-la!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/voting-sessions/${sessionId}/start`, { method: 'POST' })
+                .then(response => response.json())
+                .then(result => {
+                  if(result.success) {
+                    Swal.fire('Succès', 'Session démarrée avec succès!', 'success').then(() => location.reload());
+                  } else {
+                     Swal.fire('Erreur', result.message || 'Échec de démarrer la session.', 'error');
+                  }
+                })
+                .catch(() => Swal.fire('Erreur', 'Échec de démarrer la session.', 'error'));
+            }
+          });
+        });
+      }
+
+      if (endSessionButton) {
+        endSessionButton.addEventListener('click', () => {
+          Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: "Cela va terminer la session de vote.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#004d99',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, terminez-la!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/voting-sessions/${sessionId}/end`, { method: 'POST' })
+                .then(response => response.json())
+                .then(result => {
+                   Swal.fire('Succès', 'Session terminée avec succès!', 'success').then(() => location.reload());
+                })
+                .catch(() => Swal.fire('Erreur', 'Échec de terminer la session.', 'error'));
+            }
+          });
+        });
+      }
+
+      if (deleteSessionButton) {
+        deleteSessionButton.addEventListener('click', () => {
+          Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: "Cela va annuler et supprimer la session de vote.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Oui, supprimez-la!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/voting-sessions/${sessionId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(result => {
+                  if (!result.error) {
+                    Swal.fire('Supprimé!', 'La session a été supprimée.', 'success').then(() => {
+                        window.location.href = '/voting-sessions';
+                    });
+                  } else {
+                    Swal.fire('Erreur', result.message || 'Échec de la suppression.', 'error');
+                  }
+                })
+                .catch(() => Swal.fire('Erreur', 'Échec de la suppression de la session.', 'error'));
+            }
+          });
+        });
+      }
+
+      // Define the column definitions with the new changes
+      const columnDefs = [
+        { headerName: "ID", field: "display_id", sortable: true, filter: true, resizable: true, flex: 0.8, sort: 'asc', minWidth: 70 },
+        { headerName: "Nom", field: "full_name", sortable: true, filter: true, resizable: true, flex: 1.5, minWidth: 120 },
+        { headerName: "Objet", field: "objet", sortable: true, filter: true, resizable: true, flex: 2, minWidth: 150 },
+        { 
+          headerName: "Succès (%)", 
+          field: "average_grade", 
+          sortable: true, 
+          filter: true, 
+          resizable: true, 
+          flex: 1,
+          valueFormatter: params => {
+            if (params.value === null || typeof params.value === 'undefined') return '---';
+            const percentage = (parseFloat(params.value) / 6) * 100;
+            return percentage.toFixed(0) + '%';
+          },
+          minWidth: 100 
+        },
+        {
+          headerName: "Statut",
+          field: "average_grade",
+          sortable: false,
+          filter: false,
+          resizable: true,
+          flex: 1,
+          minWidth: 110,
+          cellRenderer: params => {
+             if (params.value === null || typeof params.value === 'undefined') return 'En attente';
+             const isRetained = parseFloat(params.value) > 3; // Threshold: > 50% (3/6)
+             const text = isRetained ? 'Retenu' : 'Non Retenu';
+             const color = isRetained ? '#28a745' : '#dc3545';
+             return `<span style="color: ${color}; font-weight: bold;">${text}</span>`;
+          }
+        },
+        { 
+          headerName: "Détails", 
+          flex: 1,
+          minWidth: 120,
+          cellRenderer: (params) => {
+            const button = document.createElement('button');
+            button.classList.add('button', 'details-button');
+            button.innerText = 'Détails';
+            button.addEventListener('click', () => window.location.href = `/propositions/proposition/${params.data.id}`);
+            return button;
+          }
+        },
+      ];
+
+      gridOptions = {
+        columnDefs: columnDefs,
+        rowData: rowData,
+        pagination: true,
+        paginationPageSize: 20,
+        domLayout: 'autoHeight',
+        suppressRowClickSelection: true,
+        localeText: AG_GRID_LOCALE_FR,
+      };
+
+      const gridDiv = document.getElementById('myGrid');
+      new agGrid.Grid(gridDiv, gridOptions);
+    })
+  </script>

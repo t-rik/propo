@@ -1,0 +1,137 @@
+<div class="content-container">
+  <h1>Sessions de Vote</h1>
+
+  <% if (isAdmin) { %>
+    <div class="session-actions">
+      <button class="button primary" onclick="createSession('jury')">Créer Session Jury</button>
+      <button class="button primary" onclick="createSession('global')">Créer Session Globale</button>
+    </div>
+  <% } %>
+
+  <div id="myGrid" class="ag-theme-alpine"></div>
+
+  <div id="dataContainer"
+    data-row-data='<%- JSON.stringify(sessions) %>'
+    style="display: none;"></div>
+</div>
+
+<script src="/localization/fr-FR.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dataContainer = document.getElementById('dataContainer');
+    const rowData = JSON.parse(dataContainer.getAttribute('data-row-data'));
+
+    const statusCellRenderer = (params) => {
+      const session = params.data;
+      if (session.ended) {
+        return '<span style="color: grey; font-weight: bold;">Terminée</span>';
+      }
+      if (session.started) {
+        return '<span style="color: green; font-weight: bold;">En cours</span>';
+      }
+      return '<span style="color: orange; font-weight: bold;">Non démarrée</span>';
+    };
+
+    const columnDefs = [{
+        headerName: "ID",
+        field: "id",
+        sortable: true, filter: true, resizable: true, flex: 0.5, sort: 'desc'
+      },
+      {
+        headerName: "Type",
+        field: "type",
+        sortable: true, filter: true, resizable: true, flex: 1
+      },
+      {
+        headerName: "Statut",
+        cellRenderer: statusCellRenderer,
+        sortable: true, filter: true, resizable: true, flex: 1
+      },
+      {
+        headerName: "Début",
+        field: "init_time",
+        sortable: true,
+        valueFormatter: params => params.value ? new Date(params.value).toLocaleString('fr-FR') : '---',
+        flex: 1.5
+      },
+      {
+        headerName: "Fin",
+        field: "end_time",
+        sortable: true,
+        valueFormatter: params => params.value ? new Date(params.value).toLocaleString('fr-FR') : '---',
+        flex: 1.5
+      },
+      {
+        headerName: "Actions",
+        sortable: false, filter: false, flex: 1,
+        cellRenderer: (params) => {
+          const button = document.createElement('a');
+          button.innerText = 'Détails';
+          button.className = 'button secondary';
+          button.href = `/voting-sessions/${params.data.id}`;
+          return button;
+        }
+      }
+    ];
+
+    const gridOptions = {
+      columnDefs: columnDefs,
+      rowData: rowData,
+      defaultColDef: {
+        sortable: true,
+        filter: true,
+        resizable: true,
+      },
+      localeText: AG_GRID_LOCALE_FR,
+      pagination: true,
+      paginationPageSize: 20,
+      domLayout: 'autoHeight',
+      suppressRowClickSelection: true,
+    };
+
+    const eGridDiv = document.querySelector('#myGrid');
+    agGrid.createGrid(eGridDiv, gridOptions);
+  });
+
+  function createSession(type) {
+    Swal.fire({
+      title: `Créer une nouvelle session ${type}?`,
+      text: "Les propositions éligibles seront verrouillées pour le vote.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, créer!',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('/voting-sessions/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: type })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              title: 'Succès!',
+              text: `Session créée. Redirection vers la page de détails...`,
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false,
+            }).then(() => {
+              window.location.href = `/voting-sessions/${data.sessionId}`;
+            });
+          } else {
+            Swal.fire('Erreur', data.message || 'Impossible de créer la session.', 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Fetch Error:', error);
+          Swal.fire('Erreur', 'Une erreur de communication est survenue.', 'error');
+        });
+      }
+    });
+  }
+</script>

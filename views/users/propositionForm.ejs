@@ -1,0 +1,78 @@
+<style>
+  body{
+    height: 110vh;
+  }
+  #description1::placeholder {
+    color: #888; /* Gris doux */
+    font-size: 16px;
+font-family: open-sans;
+}
+#description2::placeholder {
+    color: #888; /* Gris doux */
+    font-size: 16px;
+    font-family: open-sans;
+
+}
+</style>
+<form id="upload-form" method="post">
+  <h1>
+    <% if (targetUsername) { %>
+    Ajouter une proposition pour <strong><%= targetUsername %></strong>
+    <% } else { %>
+    Soumettre une Proposition
+    <% } %>
+  </h1>
+
+  <div class="input-container">
+    <label for="object">Objet :</label>
+    <input type="text" id="object" name="objet" maxlength="100" placeholder="Entrez les détails de l'objet" required>
+    <span class="counter" id="charCounter1">0 / 100</span>
+  </div>
+
+  <div class="input-container textarea-container">
+    <label for="description1">Description de la situation actuelle :</label>
+    <textarea id="description1" name="description_situation_actuelle" maxlength="1000" placeholder="Entrez la description ici" required></textarea>
+    <span class="counter" id="charCounter2">0 / 800</span>
+  </div>
+
+  <div class="input-container textarea-container">
+    <label for="description2">Description de l'amélioration proposée :</label>
+    <textarea id="description2" name="description_amelioration_proposee" maxlength="1000" placeholder="Entrez la description ici" required></textarea>
+    <span class="counter" id="charCounter3">0 / 800</span>
+  </div>
+
+  <label>Impact :</label>
+  <div class="checkbox-group">
+    <div class="checkbox-column">
+      <label><input type="checkbox" name="impact_economique" value="1"> Économique</label>
+      <label><input type="checkbox" name="impact_technique" value="1"> Technique</label>
+    </div>
+    <div class="checkbox-column">
+      <label><input type="checkbox" name="impact_formation" value="1"> Formation</label>
+      <label><input type="checkbox" name="impact_fonctionnement" value="1"> Fonctionnement</label>
+    </div>
+  </div>
+
+  <label>Statut :</label>
+  <div class="mydict">
+    <div>
+      <label>
+        <input type="radio" name="statut" value="non soldee" checked>
+        <span>Non Soldée</span>
+      </label>
+      <label>
+        <input type="radio" name="statut" value="en cours">
+        <span>En Cours</span>
+      </label>
+      <label>
+        <input type="radio" name="statut" value="soldee">
+        <span>Soldée</span>
+      </label>
+    </div>
+  </div>
+
+  <input type="hidden" name="target_user_id" value="<%= targetUserId %>" />
+  <button type="submit">Soumettre</button>
+</form>
+
+<div id="error-message" style="color: red;"></div>

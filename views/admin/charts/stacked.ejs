@@ -1,0 +1,26 @@
+<nav class="minimal-navbar">
+  <ul class="navbar-links">
+    <li><a class="active" href="/charts/stacked" id="pie-chart-link">Idées émises par salarié</a></li>
+    <li><a  href="/charts/pie" id="stack-chart-link">Idées Soldée vs En Cours</a></li>
+    <li><a href="/charts/cumul" id="cumul-chart-link">Cumul des Idées Émises</a></li>
+  </ul>
+</nav>
+<br>
+<label for="yearSelect">Sélectionnez l'année :</label>
+<select id="yearSelect" onchange="updateChart()">
+  <% years.forEach(year => { %>
+  <option value="<%= year %>" <%= year === defaultYear ? 'selected' : '' %>><%= year %></option>
+  <% }); %>
+</select>
+
+<canvas id="stackedChart"></canvas>
+
+<table id="propositionsTable">
+  <thead>
+    <tr>
+    </tr>
+  </thead>
+  <tbody id="tableBody">
+  </tbody>
+</table>
+

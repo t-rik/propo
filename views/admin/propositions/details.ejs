@@ -1,0 +1,124 @@
+<div class="proposition-container">
+  <header class="proposition-header">
+    <h1 class="proposition-title"><%= proposition.objet %></h1>
+    <div class="proposition-actions">
+      <div class="proposition-actions">
+        <button class="btn-delete" onclick="confirmDelete(<%= proposition.id %>)">Supprimer</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="proposition-info">
+    <div class="info-item">
+      <h2 class="info-subtitle">Description de la Situation Actuelle</h2>
+      <p class="info-text"><%= proposition.description_situation_actuelle %></p>
+    </div>
+    <div class="info-item">
+      <h2 class="info-subtitle">Description de l'Amélioration Proposée</h2>
+      <p class="info-text"><%= proposition.description_amelioration_proposee %></p>
+    </div>
+  </section>
+
+  <section class="proposition-status">
+    <h2 class="status-title">Statut</h2>
+    <div class="status <%= proposition.statut %>">
+      <%= proposition.statut === 'soldee' ? 'Soldée' : proposition.statut === 'en cours' ? 'En Cours' : proposition.statut === 'anulee' ? 'Annulée' : 'Non Soldée' %>
+    </div>
+  </section>
+
+  <section class="proposition-impacts">
+    <h2 class="impacts-title">Impacts</h2>
+    <ul>
+      <% if (proposition.impact_economique) { %>
+      <li class="impact-item">💡 Impact économique</li>
+      <% } %>
+      <% if (proposition.impact_technique) { %>
+      <li class="impact-item">🔧 Impact technique</li>
+      <% } %>
+      <% if (proposition.impact_formation) { %>
+      <li class="impact-item">📚 Impact de formation</li>
+      <% } %>
+      <% if (proposition.impact_fonctionnement) { %>
+      <li class="impact-item">⚙️ Impact de fonctionnement</li>
+      <% } %>
+    </ul>
+  </section>
+
+  <section class="proposition-images">
+    <h2 class="images-title">Images Avant
+    </h2>
+    <div class="image-gallery" data-type="before">
+    </div>
+
+    <h2 class="images-title">Images Après</h2>
+    <div class="image-gallery" data-type="after">
+    </div>
+  </section>
+
+  <div id="imageModal" class="modal">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+    <a id="downloadLink" class="btn-download" download>Télécharger</a>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  <script>
+
+    function confirmDelete(propositionId) {
+      Swal.fire({
+        title: "Êtes-vous sûr de vouloir supprimer cette proposition ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/propositions/${propositionId}/delete`, {
+              method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const sessionId = '<%= votingSessionId %>';
+                window.location.href = `http://localhost:3000/voting-sessions/${sessionId}`;
+              } else {
+                Swal.fire("Erreur", data.message, "error");
+              }
+            });
+        }
+      });
+    }
+
+    function refreshGallery(type) {
+      const propositionId = '<%= proposition.id %>';
+      fetch(`/images/proposition/${propositionId}?type=${type}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+
+          if (data.success) {
+            const galleryContainer = document.querySelector(`.image-gallery[data-type="${type}"]`);
+            if (data.images.length > 0) {
+              galleryContainer.innerHTML = data.images.map(image => `
+    <div class="image-wrapper" onclick="openModal('/images/${propositionId}/${type}/${image.filename}')">
+      <img src="/images/${propositionId}/${type}/${image.filename}" alt="Image ${type === 'before' ? 'Avant' : 'Après'}" class="image-thumbnail">
+    </div>
+    `).join('');
+            } else {
+              galleryContainer.innerHTML = `<p class="no-images-message">Aucune image "${type === 'before' ? 'Avant' : 'Après'}" disponible.</p>`;
+            }
+          } else {
+            console.error('Error fetching images:', data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error updating image gallery:', error);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshGallery('before');
+      refreshGallery('after');
+    });
+  </script>
+</div>

@@ -1,0 +1,47 @@
+.minimal-navbar {
+    background-color: #f8f9fa;
+    width: 100vw !important;
+    padding: 10px 0 !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex !important;
+    justify-items: center;
+    margin: 0;
+}
+
+.navbar-links {
+    list-style-type: none;
+    display: flex;
+    gap: 30px;
+}
+
+.navbar-links li {
+    display: inline !important;
+}
+
+.navbar-links a {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s, transform 0.2s ease;
+}
+
+.navbar-links a:hover {
+    color: #007bff;
+    transform: translateY(-2px);
+}
+
+.navbar-links a.active {
+    color: #007bff;
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+}
+
+#pie-chart-link,
+#stack-chart-link,
+#cumul-chart-link {
+    font-weight: normal;
+}

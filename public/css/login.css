@@ -1,0 +1,112 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f4f8; /* Light grey background for better contrast */
+  flex-direction: column; /* Stack logo and form vertically */
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 20px;
+  border-radius: 5%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 10px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 24px;
+  color: #007bff;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+}
+
+.message, .signin {
+  color: rgba(88, 87, 87, 0.8);
+  font-size: 14px;
+}
+
+.signin {
+  text-align: center;
+}
+
+.signin a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signin a:hover {
+  text-decoration: underline;
+}
+
+.form label {
+  position: relative;
+}
+
+.form label .input {
+  width: 100%;
+  padding: 16px; /* Increased padding for larger input */
+  outline: 0;
+  border: 1px solid rgba(105, 105, 105, 0.4);
+  border-radius: 8px;
+  box-sizing: border-box; /* Ensure padding does not affect width */
+}
+
+.form label .input + span {
+  position: absolute;
+  left: 16px; /* Align with padding of input */
+  top: 16px; /* Initial position when empty */
+  color: #007bff; /* Blue when not focused */
+  font-size: 0.9em;
+  cursor: text;
+  transition: 0.3s ease;
+}
+
+.form label .input:not(:placeholder-shown) + span,
+.form label .input:focus + span, 
+.form label .input:valid + span {
+  top: 0; /* Move to top when there is text or input is focused */
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #013161; /* Gray when focused or text present */
+}
+
+.submit {
+  border: none;
+  outline: none;
+  background-color: #007bff;
+  padding: 12px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+p.error
+{
+  color: red;
+}

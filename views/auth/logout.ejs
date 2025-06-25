@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+</head>
+<style>
+    /* Global reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* Body styling */
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+
+    /* Main container for logout content */
+    .logout-container {
+        text-align: center;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* Heading styling */
+    .logout-heading {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Message styling */
+    .logout-message {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 30px;
+    }
+
+    /* Form styling */
+    .logout-form {
+        margin-bottom: 20px;
+    }
+
+    /* Logout button styling */
+    .btn-logout {
+        background-color: #e74c3c;
+        color: white;
+        font-size: 1.2rem;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-logout:hover {
+        background-color: #c0392b;
+    }
+
+    /* Cancel button styling */
+    .btn-cancel {
+        text-decoration: none;
+        font-size: 1rem;
+        color: #3498db;
+        transition: color 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        color: #2980b9;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+        .logout-container {
+            width: 90%;
+            padding: 20px;
+        }
+
+        .logout-heading {
+            font-size: 1.8rem;
+        }
+
+        .logout-message {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<body>
+    <h1>Logout</h1>
+
+    <p>Are you sure you want to logout?</p>
+
+    <form action="/logout" method="GET">
+        <button type="submit">Yes, Logout</button>
+    </form>
+
+    <p><a href="/dashboard">Cancel</a></p>
+</body>
+
+</html>

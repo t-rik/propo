@@ -1,0 +1,101 @@
+<div class="proposition-container">
+  <header class="proposition-header">
+    <h1 class="proposition-title"><%= proposition.objet %></h1>
+    <div class="btns">
+      <% if ((!proposition.locked && proposition.user_id == userId) || isAdmin) { %>
+      <a href="/propositions/proposition/edit/<%= proposition.id %>" class="btn-edit">Modifier</a>
+      <% } %>
+      <% if (isAdmin) { %>
+      <button class="btn-delete" onclick="confirmDelete(<%= proposition.id %>)">Supprimer</button>
+      <% } %>
+    </div>
+  </header>
+
+  <section class="proposition-info">
+    <div class="info-item">
+      <h2 class="info-subtitle">Description de la Situation Actuelle</h2>
+      <p class="info-text"><%= proposition.description_situation_actuelle %></p>
+    </div>
+    <div class="info-item">
+      <h2 class="info-subtitle">Description de l'Amélioration Proposée</h2>
+      <p class="info-text"><%= proposition.description_amelioration_proposee %></p>
+    </div>
+  </section>
+
+  <section class="proposition-status">
+    <h2 class="status-title">Statut</h2>
+    <div class="status <%= proposition.statut %>">
+      <%= proposition.statut === 'soldee' ? 'Soldée' : proposition.statut === 'en cours' ? 'En Cours' : proposition.statut === 'annulee' ? 'Annulée' : 'Non Soldée' %>
+    </div>
+  </section>
+
+  <section class="proposition-impacts">
+    <h2 class="impacts-title">Impacts</h2>
+    <ul>
+      <% if (proposition.impact_economique) { %>
+      <li class="impact-item">💡 Impact économique</li>
+      <% } %>
+      <% if (proposition.impact_technique) { %>
+      <li class="impact-item">🔧 Impact technique</li>
+      <% } %>
+      <% if (proposition.impact_formation) { %>
+      <li class="impact-item">📚 Impact de formation</li>
+      <% } %>
+      <% if (proposition.impact_fonctionnement) { %>
+      <li class="impact-item">⚙️ Impact de fonctionnement</li>
+      <% } %>
+    </ul>
+  </section>
+
+  <section class="proposition-images">
+    <h2 class="images-title">Images Avant
+      <% if ((!proposition.locked && proposition.user_id == userId) || isAdmin) { %>
+      <button class="btn-edit" onclick="openForm('before')">Gérer images</button>
+      <% } %>
+    </h2>
+    <div class="image-gallery" data-type="before">
+    </div>
+
+    <h2 class="images-title">Images Après
+      <% if (proposition.statut == 'soldee' && ((!proposition.locked && proposition.user_id == userId) || isAdmin)) { %><button class="btn-edit" onclick="openForm('after')">Gérer images</button><%}%>
+    </h2>
+    <% if (proposition.statut !== 'soldee') { %>
+      <p class="no-images-message">Les images "Après" ne peuvent être ajoutées que si la proposition est "Soldée".</p>
+      <% } else{ %>
+      <div class="image-gallery" data-type="after">
+      </div>
+      <% } %>
+  </section>
+
+  <div id="popupFormBefore" class="popup-form">
+    <div class="popup-content">
+      <span class="popup-close" onclick="closeForm('before')">&times;</span>
+      <h2>Télécharger les images 'Avant'</h2>
+      <form action="/images/upload/<%= proposition.id %>?type=before" class="dropzone" id="beforeDropzone" enctype="multipart/form-data">
+        <div class="add-wrapper">
+          <img class="add-button" id="add1" src="/images/add-photo.jpg" alt="Dynamic Image" style="width: 100px">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="popupFormAfter" class="popup-form">
+    <div class="popup-content">
+      <span class="popup-close" onclick="closeForm('after')">&times;</span>
+      <h2>Télécharger les images 'Après'</h2>
+      <form action="/images/upload/<%= proposition.id %>?type=after" class="dropzone" id="afterDropzone" enctype="multipart/form-data">
+        <div class="add-wrapper">
+          <img class="add-button" id="add2" src="/images/add-photo.jpg" alt="Dynamic Image" style="width: 100px">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="imageModal" class="modal">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+    <a id="downloadLink" class="btn-download" download>Télécharger</a>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/min/dropzone.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/compressorjs@1.1.1/dist/compressor.min.js"></script>

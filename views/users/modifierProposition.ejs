@@ -1,0 +1,60 @@
+<form id="upload-form" method="post" action="/propositions/update/<%= proposition.id %>">
+  <h1>Modifier Proposition<span>: <%= proposition.display_id %></span> </h1>
+
+  <label for="object">Objet :</label>
+  <div class="input-container">
+    <input type="text" id="object" maxlength="100" name="objet" value="<%= proposition.objet %>" placeholder="Entrez les détails de l'objet" required>
+    <span class="counter" id="charCounter1">0 / 100</span>
+  </div>
+
+  <label for="description1">Description de la situation actuelle :</label>
+  <div class="input-container textarea-container">
+    <textarea id="description1" maxlength="800" name="description_situation_actuelle" placeholder="Entrez la description ici" required><%= proposition.description_situation_actuelle %></textarea>
+    <span class="counter" id="charCounter2">0 / 800</span>
+  </div>
+
+  <label for="description2">Description de l'amélioration proposée :</label>
+  <div class="input-container textarea-container">
+    <textarea id="description2" maxlength="800" name="description_amelioration_proposee" placeholder="Entrez la description ici" required><%= proposition.description_amelioration_proposee %></textarea>
+    <span class="counter" id="charCounter3">0 / 800</span>
+  </div>
+
+  <label>Impact :</label>
+  <div class="checkbox-group">
+    <div class="checkbox-column">
+      <label><input type="checkbox" name="impact_economique" value="1" <%= proposition.impact_economique==1 ? 'checked' : '' %>> Économique</label>
+      <label><input type="checkbox" name="impact_technique" value="1" <%= proposition.impact_technique ==1 ? 'checked' : '' %>> Technique</label>
+    </div>
+    <div class="checkbox-column">
+      <label><input type="checkbox" name="impact_formation" value="1" <%= proposition.impact_formation ==1 ? 'checked' : '' %>> Formation</label>
+      <label><input type="checkbox" name="impact_fonctionnement" value="1" <%= proposition.impact_fonctionnement==1 ? 'checked' : '' %>> Fonctionnement</label>
+    </div>
+  </div>
+
+  <label>Statut :</label>
+  <div class="mydict">
+    <div>
+      <label>
+        <input type="radio" name="statut" value="non soldee" <%= proposition.statut === 'non soldee' ? 'checked' : '' %>>
+        <span>Non Soldée</span>
+      </label>
+      <label>
+        <input type="radio" name="statut" value="en cours" <%= proposition.statut === 'en cours' ? 'checked' : '' %>>
+        <span>En Cours</span>
+      </label>
+      <% if(isAdmin) { %>
+      <label>
+        <input type="radio" name="statut" value="soldee" <%= proposition.statut === 'soldee' ? 'checked' : '' %>>
+        <span>Soldée</span>
+      </label>
+      <label>
+        <input type="radio" name="statut" value="annulee" <%= proposition.statut === 'annulee' ? 'checked' : '' %>>
+        <span>Annulée</span>
+      </label>
+      <% }%>
+    </div>
+  </div>
+  <button type="submit">Soumettre</button>
+</form>
+
+<div id="error-message" style="color: red;"></div>

@@ -1,0 +1,17 @@
+  <div class="content-container">
+    <h1>Mes Propositions</h1>
+
+    <div id="myGrid" class="ag-theme-alpine"></div>
+
+    <div id="dataContainer" data-row-data='<%= JSON.stringify(propositions).replace(/[<>]/g, match => {const map = {  '<': '&lt;',  '>': '&gt;'}}); %>' style="display: none;"></div>
+
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Détails de la Proposition</h2>
+        <div id="rowDetails"></div>
+        <button class="button" id="viewDetailsButton">Voir les détails</button>
+      </div>
+    </div>
+  </div>
+  <script src="/localization/fr-FR.js"></script>

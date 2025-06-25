@@ -1,0 +1,92 @@
+ .dropzone {
+     border: 2px dashed #ccc;
+     border-radius: 8px;
+     display: flex;
+     padding: 20px;
+     cursor: pointer;
+     max-width: 100%;
+     display: flex;
+     flex-wrap: wrap;
+     gap: 0px;
+     cursor: default;
+     justify-content: center;
+ }
+
+ .dropzone .dz-message {
+     font-size: 16px;
+     color: #888;
+ }
+
+ .dz-preview {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     margin: 0px;
+     margin-top: 10px;
+ }
+
+ .dz-filename {
+     position: relative;
+ }
+
+ .dz-filename:hover {
+     right: 100%;
+ }
+
+ .dz-image {
+     width: 100px;
+     height: 100px;
+     overflow: hidden;
+     margin: 0px;
+     border-radius: 8px;
+     margin-bottom: 5px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+ }
+
+ .dz-image img {
+     object-fit: cover;
+     margin: 0px;
+     width: 100%;
+     height: 100%;
+ }
+
+ .dz-remove {
+     color: #e74c3c;
+     cursor: pointer;
+     font-size: 14px;
+     cursor: pointer;
+ }
+
+ .dz-remove:hover {
+     cursor: pointer;
+     color: #c0392b;
+ }
+
+ .add-wrapper {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     margin-top: 10px;
+     justify-content: center;
+ }
+
+ .add-button {
+     width: 100%;
+     opacity: 0.8;
+     border-radius: 100%;
+     box-sizing: border-box;
+     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+     cursor: pointer;
+     transition: transform 0.1s ease-in-out;
+ }
+
+ .add-button:hover {
+     transform: scale(1.05);
+ }
+
+ .dz-error {
+     color: red;
+     cursor: pointer;
+ }

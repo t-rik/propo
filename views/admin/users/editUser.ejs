@@ -1,0 +1,95 @@
+<h1>Modifier l'Utilisateur</h1>
+<% if (error_msg !='' ) { %>
+  <div class="alert alert-error">
+    <%= error_msg %>
+  </div>
+  <% } %>
+    <% if (success_msg !='' ) { %>
+      <div class="alert alert-success">
+        <%= success_msg %>
+      </div>
+      <% } %>
+        <form action="/images/upload-profile-image/<%= user.id %>" class="dropzone" id="profileImageDropzone"
+          enctype="multipart/form-data">
+          <div class="add-wrapper">
+            <img class="add-button" id="add" src="/images/add-photo.jpg" alt="Dynamic Image" style="width: 100px">
+          </div>
+        </form>
+        <form action="/users/edit/<%= user.id %>" method="POST">
+          <div class="form-group">
+            <label for="username">Login</label>
+            <input type="text" id="username" name="username" value="<%= user.username %>">
+          </div>
+
+          <div class="form-group">
+            <label for="first_name">Prénom</label>
+            <input type="text" id="first_name" name="first_name" value="<%= user.first_name %>">
+          </div>
+
+          <div class="form-group">
+            <label for="last_name">Nom</label>
+            <input type="text" id="last_name" name="last_name" value="<%= user.last_name %>">
+          </div>
+
+          <div class="form-group">
+            <label for="function_id">Fonction</label>
+            <select id="function_id" name="function_id">
+              <% functions.forEach(function(f) { %>
+                <option value="<%= f.id %>" <%=user.function_id===f.id ? 'selected' : '' %>><%= f.name %>
+                </option>
+                <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="text" id="password" name="password" value="<%= user.password %>">
+          </div>
+
+          <div class="form-group checkbox-group">
+            <div class="checkbox-wrapper-21">
+              <label class="control control--checkbox">
+                admin
+                <input type="checkbox" name="is_admin" <%=user.is_admin ? 'checked' : '' %> />
+                <div class="control__indicator"></div>
+              </label>
+            </div>
+            <div class="checkbox-wrapper-21">
+              <label class="control control--checkbox">
+                jury
+                <input type="checkbox" name="is_jury" <%=user.is_jury ? 'checked' : '' %> />
+                <div class="control__indicator"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="button">Sauvegarder</button>
+            <button type="button" class="button secondary" onclick="confirmDelete()">Supprimer l'utilisateur</button>
+          </div>
+        </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+          function confirmDelete() {
+            Swal.fire({
+              title: 'Êtes-vous sûr?',
+              text: 'Vous ne pourrez pas annuler cette action!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Oui, supprimer!',
+              cancelButtonText: 'Annuler'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/users/delete/<%= user.id %>';
+                document.body.appendChild(form);
+                form.submit();
+              }
+            });
+          }
+        </script>

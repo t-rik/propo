@@ -1,0 +1,185 @@
+  <div class="proposition-container">
+    <header class="proposition-header">
+      <h1 class="proposition-title"><%= proposition.objet %></h1>
+    </header>
+
+    <section class="proposition-info">
+      <div class="info-item">
+        <h2 class="info-subtitle">Description de la Situation Actuelle</h2>
+        <p class="info-text"><%= proposition.description_situation_actuelle %></p>
+      </div>
+      <div class="info-item">
+        <h2 class="info-subtitle">Description de l'Amélioration Proposée</h2>
+        <p class="info-text"><%= proposition.description_amelioration_proposee %></p>
+      </div>
+    </section>
+
+    <section class="proposition-status">
+      <h2 class="status-title">Statut</h2>
+      <div class="status <%= proposition.statut %>">
+        <%= proposition.statut === 'soldee' ? 'Soldée' : proposition.statut === 'en cours' ? 'En Cours' : proposition.statut === 'anulee' ? 'Annulée' : 'Non Soldée' %>
+      </div>
+    </section>
+
+    <section class="proposition-impacts">
+      <h2 class="impacts-title">Impacts</h2>
+      <ul>
+        <% if (proposition.impact_economique) { %>
+        <li class="impact-item">💡 Impact économique</li>
+        <% } %>
+        <% if (proposition.impact_technique) { %>
+        <li class="impact-item">🔧 Impact technique</li>
+        <% } %>
+        <% if (proposition.impact_formation) { %>
+        <li class="impact-item">📚 Impact de formation</li>
+        <% } %>
+        <% if (proposition.impact_fonctionnement) { %>
+        <li class="impact-item">⚙️ Impact de fonctionnement</li>
+        <% } %>
+      </ul>
+    </section>
+    <section class="proposition-images"></section>
+    <h2 class="images-title">Images Avant
+    </h2>
+    <div class="image-gallery" data-type="before">
+    </div>
+
+    <h2 class="images-title">Images Après</h2>
+    <div class="image-gallery" data-type="after">
+    </div>
+    </section>
+    <div class="grading-section">
+      <h2>Évaluez cette proposition</h2>
+      <form id="gradeForm" action="/voting-sessions/proposition/<%= proposition.id %>/vote" method="POST" class="grade-form">
+        <div class="radio-group">
+          <% for (let i = 1; i <= 6; i++) { %>
+          <label class="grade-label">
+            <input type="radio" name="grade" value="<%= i %>" <%= userVote == i ? 'checked' : '' %> required>
+            <span class="custom-radio"><%= i %></span>
+          </label>
+          <% } %>
+        </div>
+        <button type="submit" class="submit-button">Soumettre</button>
+      </form>
+    </div>
+    <div id="imageModal" class="modal">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <img class="modal-content" id="modalImage">
+      <a id="downloadLink" class="btn-download" download>Télécharger</a>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const propositionId = '<%= proposition.id %>';
+        const submitButton = document.querySelector(".submit-button");
+
+        function checkPropositionStatus() {
+          fetch(`/voting-sessions/proposition-status/${propositionId}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.error) {
+                console.error('Erreur lors de la récupération du statut de la proposition:', data.error);
+                return;
+              }
+              
+              if (!data.is_current) {
+                location.reload();
+                return;
+              }
+
+              if (data.is_voted) {
+                const voteInputs = document.querySelectorAll('.grade-form input[type="radio"]');
+                const isAlreadyDisabled = Array.from(voteInputs).some(input => input.disabled);
+
+                if (submitButton) submitButton.remove();
+                if (!isAlreadyDisabled) {
+                  voteInputs.forEach(input => input.disabled = true);
+
+                  Swal.fire({
+                    icon: data.average_grade >= 3 ? 'success' : 'warning',
+                    title: 'Vote Terminé',
+                    html: `
+                  <h3>Note moyenne: <strong>${data.average_grade.toFixed(2)}</strong></h3>
+                  <h3>Statut: <strong>${data.average_grade >= 3 ? 'Retenu' : 'Non Retenu'}</strong></h3>
+                `,
+                    confirmButtonText: 'OK'
+                  });
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Erreur lors de la récupération de l\'état de la proposition:', error);
+            });
+        }
+
+        function refreshGallery(type) {
+          fetch(`/images/proposition/${propositionId}?type=${type}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const galleryContainer = document.querySelector(`.image-gallery[data-type="${type}"]`);
+                if (galleryContainer) {
+                  galleryContainer.innerHTML = data.images.length > 0 ?
+                    data.images.map(image => `
+                    <div class="image-wrapper" onclick="openModal('/images/${propositionId}/${type}/${image.filename}')">
+                      <img src="/images/${propositionId}/${type}/${image.filename}" alt="Image ${type === 'before' ? 'Avant' : 'Après'}" class="image-thumbnail">
+                    </div>
+                  `).join('') :
+                    `<p class="no-images-message">Aucune image "${type === 'before' ? 'Avant' : 'Après'}" disponible.</p>`;
+                }
+              } else {
+                console.error('Erreur lors de la récupération des images:', data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Erreur lors de la mise à jour de la galerie:', error);
+            });
+        }
+
+        function handleFormSubmission(event) {
+          event.preventDefault();
+          const form = event.target;
+          const formData = new FormData(form);
+
+          fetch(form.action, {
+              method: form.method,
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.error) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Erreur',
+                  text: data.error,
+                });
+              } else {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Succès',
+                  text: 'Votre évaluation a été soumise avec succès.',
+                });
+              }
+            })
+            .catch(error => {
+              console.error('Erreur lors de l\'envoi de la note:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'Une erreur est survenue. Veuillez réessayer.',
+              });
+            });
+        }
+
+        // Initial calls
+        checkPropositionStatus();
+        const statusCheckInterval = setInterval(checkPropositionStatus, 3000);
+
+        const gradeForm = document.getElementById('gradeForm');
+        if (gradeForm) {
+          gradeForm.addEventListener('submit', handleFormSubmission);
+        }
+
+        refreshGallery('before');
+        refreshGallery('after');
+      });
+    </script>

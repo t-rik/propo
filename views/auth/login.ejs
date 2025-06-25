@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/images/Logo-IMA-site-Web.ico">
+    <title>Login</title>
+</head>
+<style>
+    /* Global reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Body styling */
+    body {
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f7f6;
+        color: #333;
+        flex-direction: column;
+        text-align: center;
+    }
+
+
+    /* Logo styling */
+    .logo {
+        max-width: 150px;
+        margin-bottom: 20px;
+    }
+
+    /* Error message styling */
+    .error {
+        color: #e74c3c;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* Form container */
+    .form {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* Label and input styling */
+    label {
+        display: block;
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    /* Input styling */
+    .input {
+        width: 100%;
+        padding: 12px 15px;
+        padding-top: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        outline: none;
+        background-color: #f4f4f4;
+        height: 50px;
+    }
+
+    .input:focus {
+        border-color: #3498db;
+    }
+
+    /* Placeholder styling */
+    .input::placeholder {
+        color: transparent;
+    }
+
+    span {
+        user-select: none;
+        position: absolute;
+        left: 15px;
+        top: 35%;
+        transform: translateY(-10);
+        font-size: 14px;
+        color: #aaa;
+        transition: 0.2s ease-in-out;
+    }
+
+    /* Move the label when input is focused or has content */
+    .input:focus+span,
+    .input:not(:placeholder-shown)+span {
+        top: 0;
+        font-size: 12px;
+        color: #3498db;
+    }
+
+    /* Button styling */
+    .submit {
+        width: 100%;
+        padding: 12px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .submit:hover {
+        background-color: #2980b9;
+    }
+
+    @media (max-width: 480px) {
+        .form {
+            width: 90%;
+            padding: 20px;
+        }
+    }
+</style>
+
+<body style="  background-image: url('/images/2024-rain-curtain-tessellated-pattern-no-div-pure-css.png');">
+
+    <% if (error_msg !='' ) { %>
+        <p class="error">
+            <%= error_msg %>
+        </p>
+        <% } %>
+
+            <form action="login" method="POST" class="form">
+                <img src="/images/logo.jpg" alt="Logo" class="logo">
+                <label>
+                    <input style="background-color: white;" required placeholder=" " type="text" name="username"
+                        class="input">
+                    <span style="color:black;">Login :</span>
+                </label>
+
+                <label>
+                    <input style="background-color: white;" required placeholder=" " type="password" name="password"
+                        class="input">
+                    <span style="color:black;">Mot de passe :</span>
+                </label>
+                <button type="submit" class="submit">Se connecter</button>
+            </form>
+</body>
+
+</html>

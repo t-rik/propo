@@ -1,0 +1,40 @@
+<nav class="minimal-navbar">
+  <ul class="navbar-links">
+    <li><a  href="/charts/stacked" id="pie-chart-link">Idées émises par salarié</a></li>
+    <li><a class="active" href="/charts/pie" id="stack-chart-link">Idées Soldée vs En Cours</a></li>
+    <li><a href="/charts/cumul" id="cumul-chart-link">Cumul des Idées Émises</a></li>
+  </ul>
+</nav>
+<br>
+<div class="container">
+  <div class="controls-table-container">
+    <div>
+      <label>Sélectionner l'année(s) :</label>
+      <div id="yearSelector" class="custom-dropdown">
+      </div>
+
+      <label>Sélectionner le(s) mois :</label>
+      <div id="monthSelector" class="custom-dropdown">
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Mois</th>
+            <th>Propositions Soldée</th>
+            <th>Propositions En Cours</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Côté droit : Graphique -->
+  <div class="chart-container">
+    <canvas id="pieChart"></canvas>
+  </div>
+</div>

@@ -1,0 +1,148 @@
+<div class="content-container">
+  <h1>Propositions</h1>
+
+  <div id="myGrid" class="ag-theme-alpine"></div>
+    
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">×</span>
+      <h2>Détails de la Proposition</h2>
+      <div id="rowDetails"></div>
+      <button class="button" id="viewDetailsButton">Voir les détails</button>
+    </div>
+  </div>
+</div>
+<script src="/localization/fr-FR.js"></script>
+
+<script>
+  // FIX IS HERE: The variable is declared inside the script tag.
+  const rowData = <%- JSON.stringify(propositions) %>;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const columnDefs = [
+      {
+        headerName: "ID",
+        field: "display_id",
+        sortable: true, filter: true, resizable: true, flex: 1, sort: 'desc', minWidth: 80
+      },
+      {
+        headerName: "Nom",
+        field: "utilisateur",
+        sortable: true, filter: true, resizable: true, flex: 1.4, minWidth: 100
+      },
+      {
+        headerName: "Objet",
+        field: "objet",
+        sortable: true, filter: true, resizable: true, flex: 2, minWidth: 200
+      },
+      {
+        headerName: "Statut",
+        field: "statut",
+        sortable: true, filter: true, resizable: true, flex: 1.2, minWidth: 120,
+        cellStyle: params => ({ color: params.value === 'soldee' ? 'green' : params.value === 'en cours' ? 'orange' : 'inherit' })
+      },
+      {
+        headerName: "Sélection Jury",
+        field: "selection_status",
+        sortable: true, filter: true, resizable: true, flex: 1.2, minWidth: 130,
+        cellRenderer: (params) => {
+          const status = params.value;
+          if (status === 'Retenu') {
+              return `<span style="color: #28a745; font-weight: bold;">${status}</span>`;
+          } else if (status === 'Non Retenu') {
+              return `<span style="color: #dc3545; font-weight: bold;">${status}</span>`;
+          } else {
+              return `<span style="color: #6c757d;">${status}</span>`;
+          }
+        }
+      },
+      {
+        headerName: "Date",
+        field: "date_emission",
+        sortable: true, flex: 1.5,
+        valueFormatter: params => params.value ? new Date(params.value).toLocaleDateString('fr-FR') : '',
+        minWidth: 140
+      },
+      {
+        headerName: "Actions",
+        cellRenderer: 'buttonRenderer',
+        maxWidth: 150, sortable: false, filter: false
+      }
+    ];
+
+    const buttonRenderer = (params) => {
+      const button = document.createElement('button');
+      button.innerText = 'Détails';
+      button.className = 'button secondary';
+      button.onclick = (event) => {
+        event.stopPropagation();
+        window.location.href = `/propositions/proposition/${params.data.id}`;
+      };
+      return button;
+    };
+
+    const gridOptions = {
+      columnDefs: columnDefs,
+      rowData: rowData,
+      defaultColDef: {
+        sortable: true,
+        filter: true,
+        resizable: true,
+      },
+      localeText: AG_GRID_LOCALE_FR,
+      pagination: true,
+      paginationPageSize: 50,
+      domLayout: 'autoHeight',
+      suppressRowClickSelection: true,
+      components: {
+        buttonRenderer: buttonRenderer
+      },
+      onRowClicked: params => {
+        showRowDetails(params.data);
+      },
+      onGridReady: params => {
+        params.api.refreshCells({ force: true });
+      }
+    };
+
+    const eGridDiv = document.querySelector('#myGrid');
+    agGrid.createGrid(eGridDiv, gridOptions);
+
+    const modal = document.getElementById('myModal');
+    const closeButton = document.querySelector('.close');
+    const rowDetails = document.getElementById('rowDetails');
+    const viewDetailsButton = document.getElementById('viewDetailsButton');
+
+    function escapeHtml(text) {
+        if (text === null || text === undefined) return '';
+        const div = document.createElement('div');
+        div.innerText = text;
+        return div.innerHTML;
+    }
+
+    function showRowDetails(data) {
+      rowDetails.innerHTML = `
+      <p><strong>ID:</strong> ${data.display_id || 'N/A'}</p>
+      <p><strong>Objet:</strong> ${escapeHtml(data.objet || 'Non renseigné')}</p>
+      <p><strong>Situation Actuelle:</strong> ${escapeHtml(data.description_situation_actuelle || 'Non renseigné')}</p>
+      <p><strong>Amélioration Proposée:</strong> ${escapeHtml(data.description_amelioration_proposee || 'Non renseigné')}</p>
+      <p><strong>Statut:</strong> ${data.statut || 'Non défini'}</p>
+      <p><strong>Date:</strong> ${data.date_emission ? new Date(data.date_emission).toLocaleDateString('fr-FR') : 'N/A'}</p>
+    `;
+      modal.style.display = 'flex';
+      viewDetailsButton.onclick = () => {
+        window.location.href = `/propositions/proposition/${data.id}`;
+      };
+    }
+
+    closeButton.onclick = () => {
+      modal.style.display = 'none';
+    };
+
+    window.onclick = event => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    };
+  });
+</script>

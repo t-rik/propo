@@ -1,0 +1,19 @@
+<nav class="minimal-navbar">
+  <ul class="navbar-links">
+    <li><a href="/charts/stacked" id="pie-chart-link">Idées émises par salarié</a></li>
+    <li><a href="/charts/pie" id="stack-chart-link">Idées Soldée vs En Cours</a></li>
+    <li><a class="active" href="/charts/cumul" id="cumul-chart-link">Cumul des Idées Émises</a></li>
+  </ul>
+</nav>
+<br>
+<form id="filter-form">
+  <label for="start-month">Mois de début :</label>
+  <input type="month" id="start-month" name="start-month" required>
+
+  <label for="end-month">Mois de fin :</label>
+  <input type="month" id="end-month" name="end-month" required>
+
+  <button type="submit">Générer le graphique</button>
+</form>
+
+<canvas id="cumulChart" width="800" height="400"></canvas>

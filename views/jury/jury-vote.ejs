@@ -1,0 +1,67 @@
+<div class="proposition-container">
+  <header class="proposition-header">
+    <h1 class="proposition-title" id="proposition-objet"></h1>
+    <!-- The pagination is now part of the navigation container at the bottom -->
+  </header>
+
+  <section class="proposition-info">
+    <div class="info-item">
+      <h2 class="info-subtitle">Description de la Situation Actuelle</h2>
+      <p class="info-text" id="proposition-description-situation"></p>
+    </div>
+    <div class="info-item">
+      <h2 class="info-subtitle">Description de l'Amélioration Proposée</h2>
+      <p class="info-text" id="proposition-description-amelioration"></p>
+    </div>
+  </section>
+
+  <section class="proposition-status">
+    <h2 class="status-title">Statut</h2>
+    <div class="status" id="proposition-status"></div>
+  </section>
+
+  <section class="proposition-impacts">
+    <h2 class="impacts-title">Impacts</h2>
+    <ul id="proposition-impacts-list"></ul>
+  </section>
+
+  <section class="proposition-images">
+    <h2 class="images-title">Images Avant</h2>
+    <div class="image-gallery" data-type="before" id="before-images"></div>
+
+    <h2 class="images-title">Images Après</h2>
+    <div class="image-gallery" data-type="after" id="after-images"></div>
+  </section>
+
+  <!-- NEW: Revamped Voting Section -->
+  <div class="jury-vote-container">
+    <h2>Votre Vote</h2>
+    <div class="jury-vote-buttons">
+      <button class="vote-btn vote-non" data-vote="0">
+        <span class="emoji">👎</span> Non
+      </button>
+      <button class="vote-btn vote-oui" data-vote="6">
+        <span class="emoji">👍</span> Oui
+      </button>
+    </div>
+  </div>
+
+  <!-- NEW: Revamped Navigation Section -->
+  <div class="navigation-container">
+    <button class="nav-button" id="prev-btn" disabled>Précédent</button>
+    <span class="pagination" id="pagination">0/0</span>
+    <button class="nav-button" id="next-btn">Suivant</button>
+  </div>
+
+  <!-- Hidden data passed from the server (unchanged) -->
+  <input type="hidden" id="propositions-data" value="<%= JSON.stringify(propositions) %>">
+  <input type="hidden" id="user-votes-data" value="<%= JSON.stringify(userVotes) %>">
+  <input type="hidden" id="session-id-data" value="<%= sessionId %>">
+</div>
+
+<!-- Image Modal (unchanged) -->
+<div id="imageModal" class="modal">
+  <span class="modal-close" onclick="closeModal()">×</span>
+  <img class="modal-content" id="modalImage">
+  <a id="downloadLink" class="btn-download" download>Télécharger</a>
+</div>

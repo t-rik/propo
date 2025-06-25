@@ -1,0 +1,68 @@
+<nav style="padding-top: 14px; padding-bottom: 16px; padding-left: 0px;" class="navbar">
+  <div class="nav">
+    <div class="navbar-header">
+      <button class="navbar-toggler" data-toggle="open-navbar1">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="profile first">
+        <div><%= username %></div>
+        <img class="image" src="/images/profile-image/<%= userId %>" alt="Profile Image">
+      </div>
+      <a style="float: right;" href="/propositions/mes-propositions">
+        <img src="/images/logo.jpg" alt="Logo">
+      </a>
+    </div>
+
+    <div class="navbar-menu" id="open-navbar1">
+      <ul style="margin-top: 5%;width: 100%;" class="navbar-nav">
+        <%# UPDATED: Grant access to Admin OR Jury %>
+        <% if (isAdmin) { %>
+        <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold ;" href="/charts/pie">GRAPHIQUES</a></li>
+        <% } %>
+
+        <li class="navbar-dropdown">
+          <a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="#" class="dropdown-toggler" data-dropdown="my-dropdown-id" aria-expanded="false">
+           PROPOSITIONS  <i class="fa fa-angle-down"></i>
+          </a>
+          <ul class="dropdown" id="my-dropdown-id">
+            <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/propositions/mes-propositions">MES PROPOSITIONS</a></li>
+            <li class="separator"></li>
+            <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/propositions/add">NOUVELLE PROPOSITION</a></li>
+            <% if (isAdmin) { %>
+            <li class="separator"></li>
+            <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/propositions">TOUTES LES PROPOSITIONS</a></li>
+            <% } %>
+          </ul>
+        </li>
+
+        <% if (isAdmin) { %>
+        <li class="navbar-dropdown">
+          <a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="#" class="dropdown-toggler" data-dropdown="blog">
+            UTILISATEURS<i class="fa fa-angle-down"></i>
+          </a>
+          <ul class="dropdown" id="blog">
+            <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/users">LISTE DES UTILISATEURS</a></li>
+            <li class="separator"></li>
+            <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/users/add">AJOUTER UTILISATEUR</a></li>
+            <li class="separator"></li>
+            <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/functions/">GERER FONCTIONS</a></li>
+          </ul>
+        </li>
+        <% } %>
+
+        <%# UPDATED: Grant access to Admin OR Jury %>
+        <% if (isAdmin || isJury) { %>
+        <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/voting-sessions">SESSIONS DE VOTE</a></li>
+        <% } %>
+        <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/voting-sessions/statut-vote">VOTE</a></li>
+        <li><a style="color: #026e9f;font-size: 13px;font-family: sans-serif ;font-weight:bold" href="/auth/logout">DÉCONNEXION</a></li>
+      </ul>
+      <div style="margin-top: 5%;" class="profile second">
+        <div><%= username %></div>
+        <img class="image" src="/images/profile-image/<%= userId %>" alt="">
+      </div>
+    </div>
+  </div>
+</nav>

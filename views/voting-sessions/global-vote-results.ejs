@@ -1,0 +1,139 @@
+<div class="content-container">
+  <h1>Détails de la Session</h1>
+
+  <div class="session-info">
+    <p><strong>ID de la session :</strong> <%= session.id %></p>
+    <p><strong>Type de session :</strong> <%= session.type == 'global' ? 'Globale' : 'Jury' %></p>
+    <p><strong>Statut :</strong> <%= session.is_active ? "Active" : "Inactive" %></p>
+    <p><strong>Date de début :</strong> <%= session.start_time ? new Date(session.start_time).toLocaleString('fr-FR') : 'Non démarrée' %></p>
+    <p><strong>Date de fin :</strong> <%= session.end_time ? new Date(session.end_time).toLocaleString('fr-FR') : 'Non terminée' %></p>
+  </div>
+
+  <h2>Impact Économique</h2>
+  <% if (economicImpactPropositions.length > 0) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Proposition ID</th>
+          <th>Nom Complet</th>
+          <th>Note Moyenne</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% economicImpactPropositions.forEach(function(prop) { %>
+          <tr>
+            <td><%= prop.display_id %></td>
+            <td><%= prop.full_name %></td>
+            <td><%= prop.average_grade %></td>
+            <td>
+              <a href="/propositions/proposition/<%= prop.proposition_id %>" class="btn-details">Détails</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <p class="total-points">
+      <strong>Total Points:</strong> 
+      <%= economicImpactPropositions.reduce((sum, prop) => sum + parseFloat(prop.average_grade), 0) %>
+    </p>
+  <% } else { %>
+    <p class="no-propositions-message">Aucune proposition disponible pour l'impact économique.</p>
+  <% } %>
+
+  <h2>Impact Technique</h2>
+  <% if (technicalImpactPropositions.length > 0) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Proposition ID</th>
+          <th>Nom Complet</th>
+          <th>Note Moyenne</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% technicalImpactPropositions.forEach(function(prop) { %>
+          <tr>
+            <td><%= prop.display_id %></td>
+            <td><%= prop.full_name %></td>
+            <td><%= prop.average_grade %></td>
+            <td>
+              <a href="/propositions/proposition/<%= prop.proposition_id %>" class="btn-details">Détails</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <p class="total-points">
+      <strong>Total Points:</strong> 
+      <%= technicalImpactPropositions.reduce((sum, prop) => sum + parseFloat(prop.average_grade), 0) %>
+    </p>
+  <% } else { %>
+    <p class="no-propositions-message">Aucune proposition disponible pour l'impact technique.</p>
+  <% } %>
+
+  <h2>Impact Formation</h2>
+  <% if (trainingImpactPropositions.length > 0) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Proposition ID</th>
+          <th>Nom Complet</th>
+          <th>Note Moyenne</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% trainingImpactPropositions.forEach(function(prop) { %>
+          <tr>
+            <td><%= prop.display_id %></td>
+            <td><%= prop.full_name %></td>
+            <td><%= prop.average_grade %></td>
+            <td>
+              <a href="/propositions/proposition/<%= prop.proposition_id %>" class="btn-details">Détails</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <p class="total-points">
+      <strong>Total Points:</strong> 
+      <%= trainingImpactPropositions.reduce((sum, prop) => sum + parseFloat(prop.average_grade), 0) %>
+    </p>
+  <% } else { %>
+    <p class="no-propositions-message">Aucune proposition disponible pour l'impact formation.</p>
+  <% } %>
+
+  <h2>Impact Fonctionnement</h2>
+  <% if (operationalImpactPropositions.length > 0) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Proposition ID</th>
+          <th>Nom Complet</th>
+          <th>Note Moyenne</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% operationalImpactPropositions.forEach(function(prop) { %>
+          <tr>
+            <td><%= prop.display_id %></td>
+            <td><%= prop.full_name %></td>
+            <td><%= prop.average_grade %></td>
+            <td>
+              <a href="/propositions/proposition/<%= prop.proposition_id %>" class="btn-details">Détails</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <p class="total-points">
+      <strong>Total Points:</strong> 
+      <%= operationalImpactPropositions.reduce((sum, prop) => sum + parseFloat(prop.average_grade), 0) %>
+    </p>
+  <% } else { %>
+    <p class="no-propositions-message">Aucune proposition disponible pour l'impact fonctionnement.</p>
+  <% } %>
+</div>

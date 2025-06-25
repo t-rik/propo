@@ -1,0 +1,118 @@
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css"> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
+<div class="content-container">
+  <h1>Liste des Utilisateurs</h1>
+
+  <div id="myGrid" class="ag-theme-alpine"></div>
+  <div id="dataContainer" data-row-data='<%= JSON.stringify(users).replace(/' /g, "&#39;" ) %>' style="display: none;">
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const columnDefs = [
+    {
+      headerName: "Login",
+      field: "username",
+      sortable: true,
+      resizable: true,
+      flex: 1.5,
+      minWidth: 130
+
+    },
+    {
+      headerName: "Prénom",
+      field: "first_name",
+      sortable: true,
+      resizable: true,
+      flex: 1.5,
+      minWidth: 100
+    },
+    {
+      headerName: "Nom",
+      field: "last_name",
+      sortable: true,
+      resizable: true,
+      flex: 1.5,
+      minWidth: 100
+    },
+    {
+      headerName: "Fonction",
+      field: "function_name",
+      sortable: true,
+      resizable: true,
+      flex: 2,
+      minWidth: 100
+    },
+    {
+      headerName: "Admin",
+      field: "is_admin",
+      sortable: true,
+      resizable: true,
+      flex: 1,
+      cellRenderer: params => params.value ? 'Oui' : 'Non',
+      minWidth: 100
+    },
+    {
+      headerName: "Jury",
+      field: "is_jury",
+      sortable: true,
+      flex: 1,
+      cellRenderer: params => params.value ? 'Oui' : 'Non',
+      minWidth: 100
+    },
+    {
+      headerName: "Actions",
+      floatingFilter: false,
+      sortable: false,
+      cellRenderer: (params) => {
+        const container = document.createElement('div');
+
+        // Edit button
+        const editButton = document.createElement('button');
+        editButton.innerText = 'Modifier';
+        editButton.className = 'button secondary';
+        editButton.style.marginRight = '5px';
+        editButton.onclick = () => {
+          window.location.href = `/users/edit/${params.data.id}`;
+        };
+        container.appendChild(editButton);
+
+        const addPropositionButton = document.createElement('button');
+        addPropositionButton.innerText = 'Ajouter Proposition';
+        addPropositionButton.className = 'button primary';
+        addPropositionButton.onclick = () => {
+          window.location.href = `/propositions/add/${params.data.id}`;
+        };
+        container.appendChild(addPropositionButton);
+
+        return container;
+      },
+      flex: 2,
+      minWidth: 260,
+    }
+
+    ];
+
+    const dataContainer = document.getElementById('dataContainer');
+    const rowData = JSON.parse(dataContainer.getAttribute('data-row-data'));
+
+    const gridOptions = {
+      columnDefs: columnDefs,
+      rowData: rowData,
+      pagination: true,
+      defaultColDef: {
+        sortable: true,
+        filter: true,
+        resizable: true,
+      },
+      paginationPageSize: 50,
+      domLayout: 'autoHeight',
+      suppressRowClickSelection: true,
+    };
+
+    const eGridDiv = document.querySelector('#myGrid');
+    agGrid.createGrid(eGridDiv, gridOptions);
+  });
+</script>

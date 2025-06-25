@@ -1,0 +1,56 @@
+  <div class="container">
+    <div class="form-container">
+      <h1>Ajouter un nouvel utilisateur</h1>
+
+      <% if (success_msg != '') { %>
+      <div class="alert alert-success">
+        <%= success_msg %>
+      </div>
+      <% } %>
+      <% if (error_msg != '') { %>
+      <div class="alert alert-danger">
+        <%= error_msg %>
+      </div>
+      <% } %>
+
+      <form action="/users/add" method="POST">
+        <div class="form-group">
+          <label for="username">Login</label>
+          <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="first_name">Prénom</label>
+          <input type="text" class="form-control" id="first_name" name="first_name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="last_name">Nom de famille</label>
+          <input type="text" class="form-control" id="last_name" name="last_name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="function_id">Fonction</label>
+          <select class="form-control" id="function_id" name="function_id" required>
+            <% functions.forEach(function(func) { %>
+            <option value="<%= func.id %>"><%= func.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" id="is_jury" name="is_jury">
+          <label class="form-check-label" for="is_jury">Jury</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Ajouter l'utilisateur</button>
+      </form>
+
+      <a href="/users" class="btn btn-secondary">Retour à la liste des utilisateurs</a>
+    </div>
+  </div>
