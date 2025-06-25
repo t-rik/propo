@@ -154,25 +154,6 @@ router.post('/:sessionId/end', async (req, res) => {
                 await connection.query('UPDATE propositions SET retenu = 1 WHERE id IN (?)', [propositionIds]);
             }
             validatedPropositions = propositions;
-
-        } else if (session.type === 'global') {
-            // Logic for global vote: use average grade (remains unchanged)
-             const [propositions] = await connection.query(
-                `SELECT p.id, p.display_id, p.objet, AVG(v.vote_value) as avg_grade
-                 FROM propositions p
-                 JOIN votes v ON p.id = v.proposition_id
-                 WHERE v.session_id = ?
-                 GROUP BY p.id, p.display_id, p.objet
-                 HAVING avg_grade > 2.5`,
-                [sessionId]
-            );
-
-            if (propositions.length > 0) {
-                 await connection.query('UPDATE propositions SET retenu = 1 WHERE id IN (?)', [
-                    propositions.map((p) => p.id),
-                ]);
-            }
-            validatedPropositions = propositions;
         }
 
         await connection.commit();

@@ -9,39 +9,42 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    // This single, powerful query performs the entire logic in the database.
     const [propositions] = await db.query(`
-      SELECT 
+      -- Step 1: Find the most recent status from an *ended jury session* for each proposition.
+      WITH RankedJuryStatus AS (
+        SELECT
+          ps.proposition_id,
+          ps.average_grade,
+          -- Rank by the session's end time to find the latest one.
+          ROW_NUMBER() OVER(PARTITION BY ps.proposition_id ORDER BY vs.end_time DESC, vs.id DESC) as rn
+        FROM proposition_status ps
+        JOIN voting_sessions vs ON ps.voting_session_id = vs.id
+        WHERE vs.ended = 1 AND vs.type = 'jury' -- CRITICAL: Only consider ended JURY sessions.
+      ),
+      -- Step 2: Filter to get only the single latest result for each proposition.
+      LatestJuryResult AS (
+        SELECT proposition_id, average_grade
+        FROM RankedJuryStatus
+        WHERE rn = 1
+      )
+      -- Final Step: Join the results back to the main propositions table.
+      SELECT
         p.id, p.display_id, p.objet, p.statut, p.date_emission,
         CONCAT(u.first_name, ' ', COALESCE(u.last_name, '')) AS utilisateur,
-
-        -- This CASE statement implements the display logic directly in the query.
+        -- Determine the final display status based on the latest jury vote average grade.
         CASE
-          -- Step 1: Check if the proposition exists in any ENDED session.
-          WHEN EXISTS (
-            SELECT 1 
-            FROM proposition_status ps
-            JOIN voting_sessions vs ON ps.voting_session_id = vs.id
-            WHERE ps.proposition_id = p.id AND vs.ended = 1
-          ) 
-          -- If YES, then proceed to Step 2: Check the 'retenu' field.
-          THEN 
-            CASE 
-              WHEN p.retenu = 1 THEN 'Retenu'
-              WHEN p.retenu = 0 THEN 'Non Retenu'
-              -- Fallback for an unlikely edge case
-              ELSE 'Non Retenu' 
-            END
-          -- If NO (it has not been in an ended session), it is 'En attente'.
-          ELSE 'En attente'
+          -- If no result is found, it means the proposition was never in an ended jury session.
+          WHEN ljr.proposition_id IS NULL THEN 'En attente'
+          -- A jury vote average is 0 for No, 6 for Yes. > 3 means more than 50% voted Yes.
+          WHEN ljr.average_grade > 3 THEN 'Retenu'
+          -- Otherwise, it did not pass the jury vote.
+          ELSE 'Non Retenu'
         END AS selection_status
-
-      FROM 
-        propositions p
-      JOIN 
-        users u ON p.user_id = u.id
-      ORDER BY 
-        p.id DESC
+      FROM propositions p
+      JOIN users u ON p.user_id = u.id
+      -- LEFT JOIN is crucial because not all propositions will have a jury result.
+      LEFT JOIN LatestJuryResult ljr ON p.id = ljr.proposition_id
+      ORDER BY p.id DESC;
     `);
 
     res.render('layouts/main', {
@@ -61,7 +64,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Erreur' });
   }
 });
-
 router.get('/mes-propositions', async (req, res) => {
   try {
     const [results] = await db.query('SELECT * FROM propositions WHERE user_id = ?', [req.session.userId]);
